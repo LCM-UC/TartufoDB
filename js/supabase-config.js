@@ -5,8 +5,8 @@
 
 // 🔴 IMPORTANTE: Reemplaza estos valores con tus credenciales de Supabase
 // Los encuentras en: Supabase Dashboard > Settings > API
-const SUPABASE_URL = 'https://cyjcxvyihqxiuillazik.supabase.co'; // Reemplazar
-const SUPABASE_KEY = 'sb_publishable_5vcO8X0Km1T3qc1IZA8Hbw_Ipi9Mra5'; // Reemplazar
+const SUPABASE_URL = 'https://skxjwxfgaljnognbuktp.supabase.co'; 
+const SUPABASE_KEY = 'sb_publishable_OKaovPWIxljS4fD3CtfONA_YfAaPG_j'; 
 
 // Inicializar cliente de Supabase
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
