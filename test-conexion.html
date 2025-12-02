@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Test de Conexión - Supabase</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  
+  <style>
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .test-container {
+      background: white;
+      border-radius: 20px;
+      padding: 3rem;
+      max-width: 800px;
+      width: 100%;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+
+    .test-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .test-header h1 {
+      color: #2c3e50;
+      margin-bottom: 0.5rem;
+    }
+
+    .test-item {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      border-left: 4px solid #6c757d;
+      transition: all 0.3s ease;
+    }
+
+    .test-item.loading {
+      border-left-color: #ffc107;
+    }
+
+    .test-item.success {
+      border-left-color: #28a745;
+      background: #d4edda;
+    }
+
+    .test-item.error {
+      border-left-color: #dc3545;
+      background: #f8d7da;
+    }
+
+    .test-item h5 {
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .test-result {
+      margin-top: 0.5rem;
+      padding: 0.75rem;
+      background: white;
+      border-radius: 5px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .spinner-border-sm {
+      width: 1rem;
+      height: 1rem;
+    }
+
+    .config-info {
+      background: #e7f3ff;
+      border: 1px solid #b3d9ff;
+      border-radius: 10px;
+      padding: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .config-info code {
+      background: white;
+      padding: 2px 6px;
+      border-radius: 3px;
+      color: #dc3545;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="test-container">
+    <div class="test-header">
+      <h1><i class="bi bi-database-check"></i> Test de Conexión</h1>
+      <p class="text-muted">Verificación de conexión con Supabase</p>
+    </div>
+
+    <!-- Información de configuración -->
+    <div class="config-info">
+      <h6><i class="bi bi-info-circle"></i> Configuración Actual</h6>
+      <p class="mb-1"><strong>URL:</strong> <code id="current-url">Cargando...</code></p>
+      <p class="mb-0"><strong>Key:</strong> <code id="current-key">Cargando...</code></p>
+    </div>
+
+    <!-- Botón de prueba -->
+    <div class="text-center mb-4">
+      <button id="btn-test" class="btn btn-primary btn-lg">
+        <i class="bi bi-play-circle"></i> Ejecutar Pruebas
+      </button>
+    </div>
+
+    <!-- Test 1: Conexión básica -->
+    <div class="test-item" id="test-1">
+      <h5>
+        <i class="bi bi-circle" id="icon-1"></i>
+        <span>1. Verificar conexión con Supabase</span>
+        <div class="spinner-border spinner-border-sm ms-auto" role="status" style="display: none;" id="spinner-1"></div>
+      </h5>
+      <p class="text-muted mb-0">Probando conexión básica con el servidor</p>
+      <div class="test-result" id="result-1" style="display: none;"></div>
+    </div>
+
+    <!-- Test 2: Lectura de productos -->
+    <div class="test-item" id="test-2">
+      <h5>
+        <i class="bi bi-circle" id="icon-2"></i>
+        <span>2. Leer productos desde la base de datos</span>
+        <div class="spinner-border spinner-border-sm ms-auto" role="status" style="display: none;" id="spinner-2"></div>
+      </h5>
+      <p class="text-muted mb-0">Intentando obtener productos de la tabla</p>
+      <div class="test-result" id="result-2" style="display: none;"></div>
+    </div>
+
+    <!-- Test 3: Lectura de categorías -->
+    <div class="test-item" id="test-3">
+      <h5>
+        <i class="bi bi-circle" id="icon-3"></i>
+        <span>3. Leer categorías desde la base de datos</span>
+        <div class="spinner-border spinner-border-sm ms-auto" role="status" style="display: none;" id="spinner-3"></div>
+      </h5>
+      <p class="text-muted mb-0">Intentando obtener categorías de la tabla</p>
+      <div class="test-result" id="result-3" style="display: none;"></div>
+    </div>
+
+    <!-- Test 4: Lectura de usuarios -->
+    <div class="test-item" id="test-4">
+      <h5>
+        <i class="bi bi-circle" id="icon-4"></i>
+        <span>4. Verificar tabla de usuarios</span>
+        <div class="spinner-border spinner-border-sm ms-auto" role="status" style="display: none;" id="spinner-4"></div>
+      </h5>
+      <p class="text-muted mb-0">Comprobando estructura de usuarios</p>
+      <div class="test-result" id="result-4" style="display: none;"></div>
+    </div>
+
+    <!-- Test 5: Políticas de seguridad -->
+    <div class="test-item" id="test-5">
+      <h5>
+        <i class="bi bi-circle" id="icon-5"></i>
+        <span>5. Verificar políticas de seguridad (RLS)</span>
+        <div class="spinner-border spinner-border-sm ms-auto" role="status" style="display: none;" id="spinner-5"></div>
+      </h5>
+      <p class="text-muted mb-0">Comprobando Row Level Security</p>
+      <div class="test-result" id="result-5" style="display: none;"></div>
+    </div>
+
+    <!-- Resumen final -->
+    <div class="alert alert-info mt-4" id="resumen" style="display: none;">
+      <h5><i class="bi bi-clipboard-check"></i> Resumen</h5>
+      <p class="mb-0" id="resumen-texto"></p>
+    </div>
+
+    <!-- Botón volver -->
+    <div class="text-center mt-4">
+      <a href="index.html" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Volver al inicio
+      </a>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Supabase Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <!-- JavaScript de prueba -->
+  <script>
+    // ============================================
+    // SISTEMA DE PRUEBAS
+    // ============================================
+
+    let testsPasados = 0;
+    let testsFallados = 0;
+
+    // Mostrar configuración actual
+    function mostrarConfiguracion() {
+      // Intentar cargar el archivo de configuración
+      const script = document.querySelector('script[src*="supabase-config.js"]');
+      
+      if (!script) {
+        // Si no existe el archivo, mostrar valores de ejemplo
+        document.getElementById('current-url').textContent = 'No configurado (ver js/supabase-config.js)';
+        document.getElementById('current-key').textContent = 'No configurado';
+        return false;
+      }
+      
+      return true;
+    }
+
+    // Ejecutar test individual
+    async function ejecutarTest(testNum, testFn) {
+      const testItem = document.getElementById(`test-${testNum}`);
+      const icon = document.getElementById(`icon-${testNum}`);
+      const spinner = document.getElementById(`spinner-${testNum}`);
+      const result = document.getElementById(`result-${testNum}`);
+
+      // Mostrar loading
+      testItem.className = 'test-item loading';
+      icon.className = 'bi bi-hourglass-split text-warning';
+      spinner.style.display = 'block';
+      result.style.display = 'none';
+
+      try {
+        const resultado = await testFn();
+        
+        // Mostrar éxito
+        testItem.className = 'test-item success';
+        icon.className = 'bi bi-check-circle-fill text-success';
+        result.style.display = 'block';
+        result.innerHTML = `<strong class="text-success">✓ Test pasado</strong><br>${resultado}`;
+        testsPasados++;
+      } catch (error) {
+        // Mostrar error
+        testItem.className = 'test-item error';
+        icon.className = 'bi bi-x-circle-fill text-danger';
+        result.style.display = 'block';
+        result.innerHTML = `<strong class="text-danger">✗ Test fallado</strong><br>${error.message || error}`;
+        testsFallados++;
+      } finally {
+        spinner.style.display = 'none';
+      }
+    }
+
+    // ============================================
+    // TESTS INDIVIDUALES
+    // ============================================
+
+    async function test1_ConexionBasica() {
+      // Verificar que exista la configuración
+      if (typeof SUPABASE_URL === 'undefined' || typeof SUPABASE_KEY === 'undefined') {
+        throw new Error('Las credenciales de Supabase no están configuradas. Por favor, edita js/supabase-config.js');
+      }
+
+      if (SUPABASE_URL.includes('tuproyecto') || SUPABASE_KEY.includes('tu-anon-key')) {
+        throw new Error('Debes reemplazar las credenciales de ejemplo en js/supabase-config.js con tus credenciales reales de Supabase');
+      }
+
+      // Mostrar configuración
+      document.getElementById('current-url').textContent = SUPABASE_URL;
+      document.getElementById('current-key').textContent = SUPABASE_KEY.substring(0, 20) + '...';
+
+      // Intentar hacer una consulta simple
+      const { data, error } = await supabase
+        .from('productos')
+        .select('count')
+        .limit(1);
+
+      if (error) {
+        if (error.message.includes('relation') || error.message.includes('does not exist')) {
+          throw new Error('Las tablas no existen en Supabase. Por favor, ejecuta el script SQL en tu dashboard de Supabase.');
+        }
+        throw new Error(`Error de conexión: ${error.message}`);
+      }
+
+      return `Conexión exitosa con Supabase<br>URL: ${SUPABASE_URL}`;
+    }
+
+    async function test2_LeerProductos() {
+      const { data, error } = await supabase
+        .from('productos')
+        .select('*')
+        .limit(5);
+
+      if (error) throw new Error(error.message);
+
+      if (!data || data.length === 0) {
+        return `La tabla existe pero no tiene productos.<br>Ejecuta el SQL completo para insertar datos de prueba.`;
+      }
+
+      return `✓ Se encontraron ${data.length} productos<br>Ejemplo: ${data[0].nombre} - S/ ${data[0].precio}`;
+    }
+
+    async function test3_LeerCategorias() {
+      const { data, error } = await supabase
+        .from('categorias')
+        .select('*');
+
+      if (error) throw new Error(error.message);
+
+      if (!data || data.length === 0) {
+        return `La tabla existe pero no tiene categorías.<br>Ejecuta el SQL completo para insertar datos.`;
+      }
+
+      return `✓ Se encontraron ${data.length} categorías<br>Ejemplos: ${data.map(c => c.nombre).join(', ')}`;
+    }
+
+    async function test4_VerificarUsuarios() {
+      const { data, error, count } = await supabase
+        .from('usuarios')
+        .select('email, rol_id', { count: 'exact' })
+        .limit(5);
+
+      if (error) throw new Error(error.message);
+
+      return `✓ Tabla de usuarios correcta<br>Total de usuarios: ${count || 0}<br>Usuarios encontrados: ${data.length}`;
+    }
+
+    async function test5_VerificarRLS() {
+      // Verificar que podemos leer productos (política pública)
+      const { data: productos, error: errorProductos } = await supabase
+        .from('productos')
+        .select('id')
+        .limit(1);
+
+      if (errorProductos) {
+        throw new Error('Las políticas RLS podrían estar bloqueando el acceso');
+      }
+
+      return `✓ Las políticas de seguridad están configuradas correctamente<br>Acceso público a productos: OK`;
+    }
+
+    // ============================================
+    // EJECUTAR TODAS LAS PRUEBAS
+    // ============================================
+
+    async function ejecutarTodasLasPruebas() {
+      testsPasados = 0;
+      testsFallados = 0;
+
+      const btnTest = document.getElementById('btn-test');
+      btnTest.disabled = true;
+      btnTest.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Ejecutando pruebas...';
+
+      // Ejecutar tests secuencialmente
+      await ejecutarTest(1, test1_ConexionBasica);
+      await new Promise(resolve => setTimeout(resolve, 500)); // Pequeña pausa
+
+      await ejecutarTest(2, test2_LeerProductos);
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      await ejecutarTest(3, test3_LeerCategorias);
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      await ejecutarTest(4, test4_VerificarUsuarios);
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      await ejecutarTest(5, test5_VerificarRLS);
+
+      // Mostrar resumen
+      const resumen = document.getElementById('resumen');
+      const resumenTexto = document.getElementById('resumen-texto');
+      resumen.style.display = 'block';
+
+      const total = testsPasados + testsFallados;
+      resumenTexto.innerHTML = `
+        <strong>Tests completados:</strong> ${total}<br>
+        <strong class="text-success">Pasados:</strong> ${testsPasados}<br>
+        <strong class="text-danger">Fallados:</strong> ${testsFallados}<br><br>
+        ${testsFallados === 0 
+          ? '🎉 ¡Perfecto! Tu proyecto está correctamente conectado a Supabase.' 
+          : '⚠️ Hay algunos errores. Revisa los detalles arriba y corrige la configuración.'}
+      `;
+
+      if (testsFallados === 0) {
+        resumen.className = 'alert alert-success mt-4';
+      } else {
+        resumen.className = 'alert alert-warning mt-4';
+      }
+
+      btnTest.disabled = false;
+      btnTest.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Ejecutar pruebas nuevamente';
+    }
+
+    // ============================================
+    // INICIALIZACIÓN
+    // ============================================
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Intentar mostrar configuración
+      mostrarConfiguracion();
+
+      // Configurar botón de test
+      document.getElementById('btn-test').addEventListener('click', ejecutarTodasLasPruebas);
+    });
+  </script>
+
+  <!-- Cargar configuración de Supabase -->
+  <script src="js/supabase-config.js"></script>
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Registro - Pastelería Tartufo</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Animate.css -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet"/>
+  <!-- Estilos personalizados -->
+  <link rel="stylesheet" href="css/style.css">
+  
+  <style>
+    .registro-container {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 0;
+    }
+    
+    .registro-card {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      overflow: hidden;
+      max-width: 900px;
+      width: 100%;
+    }
+    
+    .registro-banner {
+      background: linear-gradient(135deg, #ffb6c1, #ff9eb0);
+      padding: 3rem 2rem;
+      color: white;
+      text-align: center;
+    }
+    
+    .registro-banner h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    
+    .registro-form {
+      padding: 3rem 2rem;
+    }
+    
+    .form-label {
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .form-control:focus {
+      border-color: #ffb6c1;
+      box-shadow: 0 0 0 0.2rem rgba(255, 182, 193, 0.25);
+    }
+    
+    .btn-registro {
+      background: linear-gradient(135deg, #ffb6c1, #ff9eb0);
+      border: none;
+      color: white;
+      font-weight: 600;
+      padding: 0.75rem;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-registro:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 182, 193, 0.4);
+    }
+    
+    .password-strength {
+      height: 5px;
+      border-radius: 3px;
+      transition: all 0.3s ease;
+      margin-top: 5px;
+    }
+    
+    .strength-weak { background: #dc3545; width: 33%; }
+    .strength-medium { background: #ffc107; width: 66%; }
+    .strength-strong { background: #28a745; width: 100%; }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow">
+    <div class="container">
+      <a class="navbar-brand fw-bold text-accent" href="index.html">
+        <i class="bi bi-cake2"></i> Tartufo
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
+          <li class="nav-item"><a class="nav-link" href="tienda.html">Tienda</a></li>
+          <li class="nav-item"><a class="nav-link" href="login.html">Iniciar Sesión</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- CONTENEDOR DE REGISTRO -->
+  <section class="registro-container">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-10">
+          <div class="registro-card animate__animated animate__fadeInUp">
+            <div class="row g-0">
+              
+              <!-- Banner lateral -->
+              <div class="col-md-5 registro-banner d-flex flex-column justify-content-center">
+                <i class="bi bi-person-circle" style="font-size: 5rem; margin-bottom: 1rem;"></i>
+                <h2>¡Únete a Tartufo!</h2>
+                <p>Crea tu cuenta y disfruta de los mejores pasteles artesanales</p>
+                <div class="mt-4">
+                  <p class="mb-2">¿Ya tienes cuenta?</p>
+                  <a href="login.html" class="btn btn-light">Iniciar Sesión</a>
+                </div>
+              </div>
+
+              <!-- Formulario -->
+              <div class="col-md-7 registro-form">
+                <h3 class="mb-4 text-center">Crear Cuenta Nueva</h3>
+                
+                <form id="registroForm">
+                  <div class="row">
+                    <!-- Nombre -->
+                    <div class="col-md-6 mb-3">
+                      <label for="nombre" class="form-label">
+                        <i class="bi bi-person"></i> Nombre *
+                      </label>
+                      <input type="text" 
+                             class="form-control" 
+                             id="nombre" 
+                             name="nombre"
+                             placeholder="Juan" 
+                             required>
+                    </div>
+
+                    <!-- Apellido -->
+                    <div class="col-md-6 mb-3">
+                      <label for="apellido" class="form-label">
+                        <i class="bi bi-person"></i> Apellido *
+                      </label>
+                      <input type="text" 
+                             class="form-control" 
+                             id="apellido" 
+                             name="apellido"
+                             placeholder="Pérez" 
+                             required>
+                    </div>
+                  </div>
+
+                  <!-- Email -->
+                  <div class="mb-3">
+                    <label for="email" class="form-label">
+                      <i class="bi bi-envelope"></i> Correo Electrónico *
+                    </label>
+                    <input type="email" 
+                           class="form-control" 
+                           id="email" 
+                           name="email"
+                           placeholder="ejemplo@correo.com" 
+                           required>
+                    <div class="invalid-feedback">
+                      Por favor ingresa un correo válido
+                    </div>
+                  </div>
+
+                  <!-- Teléfono -->
+                  <div class="mb-3">
+                    <label for="telefono" class="form-label">
+                      <i class="bi bi-telephone"></i> Teléfono *
+                    </label>
+                    <input type="tel" 
+                           class="form-control" 
+                           id="telefono" 
+                           name="telefono"
+                           placeholder="+51 999 999 999" 
+                           required>
+                  </div>
+
+                  <!-- Dirección -->
+                  <div class="mb-3">
+                    <label for="direccion" class="form-label">
+                      <i class="bi bi-geo-alt"></i> Dirección
+                    </label>
+                    <textarea class="form-control" 
+                              id="direccion" 
+                              name="direccion"
+                              rows="2" 
+                              placeholder="Av. Principal 123, Lima"></textarea>
+                  </div>
+
+                  <!-- Contraseña -->
+                  <div class="mb-3">
+                    <label for="password" class="form-label">
+                      <i class="bi bi-lock"></i> Contraseña *
+                    </label>
+                    <div class="input-group">
+                      <input type="password" 
+                             class="form-control" 
+                             id="password" 
+                             name="password"
+                             placeholder="Mínimo 6 caracteres" 
+                             required 
+                             minlength="6">
+                      <button class="btn btn-outline-secondary" 
+                              type="button" 
+                              id="togglePassword">
+                        <i class="bi bi-eye"></i>
+                      </button>
+                    </div>
+                    <div class="password-strength" id="passwordStrength"></div>
+                    <small class="text-muted">La contraseña debe tener al menos 6 caracteres</small>
+                  </div>
+
+                  <!-- Confirmar Contraseña -->
+                  <div class="mb-3">
+                    <label for="confirmPassword" class="form-label">
+                      <i class="bi bi-lock-fill"></i> Confirmar Contraseña *
+                    </label>
+                    <input type="password" 
+                           class="form-control" 
+                           id="confirmPassword" 
+                           name="confirmPassword"
+                           placeholder="Repite tu contraseña" 
+                           required 
+                           minlength="6">
+                    <div class="invalid-feedback">
+                      Las contraseñas no coinciden
+                    </div>
+                  </div>
+
+                  <!-- Términos -->
+                  <div class="mb-3 form-check">
+                    <input type="checkbox" 
+                           class="form-check-input" 
+                           id="terminos" 
+                           required>
+                    <label class="form-check-label" for="terminos">
+                      Acepto los <a href="#" class="text-decoration-none">términos y condiciones</a>
+                    </label>
+                  </div>
+
+                  <!-- Botón submit -->
+                  <button type="submit" class="btn btn-registro w-100">
+                    <i class="bi bi-check-circle"></i> Crear Cuenta
+                  </button>
+                </form>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Supabase Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <!-- JavaScript -->
+  <script src="js/supabase-config.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>

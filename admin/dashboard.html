@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Panel de Administración - Tartufo</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  
+  <style>
+    :root {
+      --sidebar-width: 250px;
+      --color-acento: #ffb6c1;
+    }
+
+    body {
+      overflow-x: hidden;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: var(--sidebar-width);
+      background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+      color: white;
+      padding-top: 1rem;
+      z-index: 1000;
+      transition: all 0.3s;
+    }
+
+    .sidebar-header {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      margin-bottom: 1rem;
+    }
+
+    .sidebar-nav {
+      list-style: none;
+      padding: 0;
+    }
+
+    .sidebar-nav li {
+      margin-bottom: 0.5rem;
+    }
+
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem 1.5rem;
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+
+    .sidebar-nav a:hover,
+    .sidebar-nav a.active {
+      background: rgba(255,255,255,0.1);
+      color: white;
+    }
+
+    .sidebar-nav i {
+      margin-right: 0.75rem;
+      font-size: 1.2rem;
+    }
+
+    .main-content {
+      margin-left: var(--sidebar-width);
+      padding: 2rem;
+      min-height: 100vh;
+      background: #f8f9fa;
+    }
+
+    .stat-card {
+      border-radius: 10px;
+      padding: 1.5rem;
+      color: white;
+      margin-bottom: 1.5rem;
+      transition: transform 0.3s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .stat-card.blue { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .stat-card.green { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+    .stat-card.orange { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+    .stat-card.pink { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+
+    .stat-card h3 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-card p {
+      margin: 0;
+      opacity: 0.9;
+    }
+
+    .content-card {
+      background: white;
+      border-radius: 10px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      margin-bottom: 1.5rem;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #2c3e50;
+      margin: 0;
+    }
+
+    .btn-acento {
+      background: var(--color-acento);
+      border: none;
+      color: #000;
+      font-weight: 600;
+    }
+
+    .btn-acento:hover {
+      background: #ff9eb0;
+      color: #000;
+    }
+
+    .table-responsive {
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .badge-estado {
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      
+      .sidebar.show {
+        transform: translateX(0);
+      }
+
+      .main-content {
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h4 class="mb-0">
+        <i class="bi bi-cake2"></i> Tartufo Admin
+      </h4>
+      <small id="user-info" class="text-muted">Cargando...</small>
+    </div>
+
+    <ul class="sidebar-nav">
+      <li>
+        <a href="#" class="active" data-section="dashboard">
+          <i class="bi bi-speedometer2"></i>
+          Dashboard
+        </a>
+      </li>
+      <li>
+        <a href="#" data-section="productos">
+          <i class="bi bi-box-seam"></i>
+          Productos
+        </a>
+      </li>
+      <li>
+        <a href="#" data-section="pedidos">
+          <i class="bi bi-cart-check"></i>
+          Pedidos
+        </a>
+      </li>
+      <li>
+        <a href="#" data-section="categorias">
+          <i class="bi bi-tags"></i>
+          Categorías
+        </a>
+      </li>
+      <li>
+        <a href="#" data-section="clientes">
+          <i class="bi bi-people"></i>
+          Clientes
+        </a>
+      </li>
+      <li>
+        <a href="#" id="btn-logout">
+          <i class="bi bi-box-arrow-right"></i>
+          Cerrar Sesión
+        </a>
+      </li>
+    </ul>
+  </aside>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="main-content">
+    
+    <!-- Sección Dashboard -->
+    <div id="section-dashboard" class="content-section">
+      <div class="page-header">
+        <h1><i class="bi bi-speedometer2"></i> Dashboard</h1>
+        <button class="btn btn-acento">
+          <i class="bi bi-download"></i> Exportar Reporte
+        </button>
+      </div>
+
+      <!-- Estadísticas -->
+      <div class="row">
+        <div class="col-md-3">
+          <div class="stat-card blue">
+            <i class="bi bi-box-seam" style="font-size: 2rem; opacity: 0.8;"></i>
+            <h3 id="total-productos">0</h3>
+            <p>Total Productos</p>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card green">
+            <i class="bi bi-cart-check" style="font-size: 2rem; opacity: 0.8;"></i>
+            <h3 id="total-pedidos">0</h3>
+            <p>Pedidos Totales</p>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card orange">
+            <i class="bi bi-people" style="font-size: 2rem; opacity: 0.8;"></i>
+            <h3 id="total-clientes">0</h3>
+            <p>Clientes Registrados</p>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card pink">
+            <i class="bi bi-currency-dollar" style="font-size: 2rem; opacity: 0.8;"></i>
+            <h3 id="ventas-total">S/ 0</h3>
+            <p>Ventas Totales</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pedidos Recientes -->
+      <div class="content-card">
+        <h4 class="mb-3"><i class="bi bi-clock-history"></i> Pedidos Recientes</h4>
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Cliente</th>
+                <th>Fecha</th>
+                <th>Total</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="pedidos-recientes">
+              <tr>
+                <td colspan="6" class="text-center">Cargando...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sección Productos -->
+    <div id="section-productos" class="content-section" style="display: none;">
+      <div class="page-header">
+        <h1><i class="bi bi-box-seam"></i> Gestión de Productos</h1>
+        <button class="btn btn-acento" data-bs-toggle="modal" data-bs-target="#modalProducto">
+          <i class="bi bi-plus-circle"></i> Nuevo Producto
+        </button>
+      </div>
+
+      <div class="content-card">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Imagen</th>
+                <th>Nombre</th>
+                <th>Categoría</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-productos">
+              <tr>
+                <td colspan="7" class="text-center">Cargando productos...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Otras secciones se cargan dinámicamente -->
+    <div id="section-pedidos" class="content-section" style="display: none;">
+      <h1>Gestión de Pedidos</h1>
+      <p>Contenido en desarrollo...</p>
+    </div>
+
+    <div id="section-categorias" class="content-section" style="display: none;">
+      <h1>Gestión de Categorías</h1>
+      <p>Contenido en desarrollo...</p>
+    </div>
+
+    <div id="section-clientes" class="content-section" style="display: none;">
+      <h1>Gestión de Clientes</h1>
+      <p>Contenido en desarrollo...</p>
+    </div>
+  </main>
+
+  <!-- MODAL NUEVO/EDITAR PRODUCTO -->
+  <div class="modal fade" id="modalProducto" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            <i class="bi bi-plus-circle"></i> <span id="modal-title">Nuevo Producto</span>
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formProducto">
+            <input type="hidden" id="producto-id" name="id">
+            
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="producto-nombre" class="form-label">Nombre *</label>
+                <input type="text" class="form-control" id="producto-nombre" name="nombre" required>
+              </div>
+              
+              <div class="col-md-6 mb-3">
+                <label for="producto-categoria" class="form-label">Categoría *</label>
+                <select class="form-select" id="producto-categoria" name="categoria_id" required>
+                  <option value="">Seleccionar...</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="producto-descripcion" class="form-label">Descripción</label>
+              <textarea class="form-control" id="producto-descripcion" name="descripcion" rows="3"></textarea>
+            </div>
+
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label for="producto-precio" class="form-label">Precio (S/) *</label>
+                <input type="number" class="form-control" id="producto-precio" name="precio" step="0.01" required>
+              </div>
+              
+              <div class="col-md-4 mb-3">
+                <label for="producto-stock" class="form-label">Stock</label>
+                <input type="number" class="form-control" id="producto-stock" name="stock" value="0">
+              </div>
+
+              <div class="col-md-4 mb-3">
+                <label class="form-label d-block">Estado</label>
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="producto-disponible" name="disponible" checked>
+                  <label class="form-check-label" for="producto-disponible">Disponible</label>
+                </div>
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="producto-destacado" name="destacado">
+                  <label class="form-check-label" for="producto-destacado">Destacado</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="producto-imagen" class="form-label">URL de la Imagen</label>
+              <input type="text" class="form-control" id="producto-imagen" name="imagen_url" placeholder="img/img/producto.jpg">
+              <small class="text-muted">Puedes usar una URL o ruta local</small>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-acento" id="btn-guardar-producto">
+            <i class="bi bi-save"></i> Guardar Producto
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Supabase Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <!-- JavaScript -->
+  <script src="../js/supabase-config.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
