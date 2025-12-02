@@ -116,8 +116,19 @@ class AuthManager {
 
   async registrarUsuario(userData) {
     try {
-      // Hashear contraseña (en producción deberías usar bcrypt en el backend)
-      const passwordHash = await this.hashPassword(userData.password);
+      // Verificar si el email ya existe
+      const { data: existingUser } = await supabase
+        .from('usuarios')
+        .select('email')
+        .eq('email', userData.email)
+        .single();
+
+      if (existingUser) {
+        return { success: false, message: 'Este correo ya está registrado' };
+      }
+
+      // Hashear contraseña
+      const passwordHash = this.hashPassword(userData.password);
 
       // Insertar usuario en la base de datos
       const { data, error } = await supabase
@@ -135,7 +146,8 @@ class AuthManager {
         .single();
 
       if (error) {
-        if (error.code === '23505') { // Duplicate email
+        console.error('Error al insertar usuario:', error);
+        if (error.code === '23505') {
           return { success: false, message: 'Este correo ya está registrado' };
         }
         throw error;
@@ -204,6 +216,8 @@ class AuthManager {
 
   async loginUsuario(email, password, expectedRole) {
     try {
+      console.log('🔍 Intentando login con:', { email, expectedRole });
+
       // Buscar usuario por email
       const { data: usuarios, error } = await supabase
         .from('usuarios')
@@ -219,15 +233,29 @@ class AuthManager {
         .single();
 
       if (error || !usuarios) {
+        console.error('❌ Usuario no encontrado:', error);
         return { success: false, message: 'Usuario no encontrado' };
       }
 
-      // Verificar contraseña (simulado - en producción usar bcrypt)
-      const passwordMatch = await this.verifyPassword(password, usuarios.password_hash);
+      console.log('👤 Usuario encontrado:', {
+        email: usuarios.email,
+        rol: usuarios.roles?.nombre,
+        hash_guardado: usuarios.password_hash
+      });
+
+      // Verificar contraseña
+      const passwordHash = this.hashPassword(password);
+      console.log('🔐 Hash generado:', passwordHash);
+      console.log('🔐 Hash en BD:', usuarios.password_hash);
+
+      const passwordMatch = (passwordHash === usuarios.password_hash);
       
       if (!passwordMatch) {
+        console.error('❌ Contraseña incorrecta');
         return { success: false, message: 'Contraseña incorrecta' };
       }
+
+      console.log('✅ Contraseña correcta');
 
       // Verificar rol
       const userRole = usuarios.roles.nombre;
@@ -244,6 +272,8 @@ class AuthManager {
         return { success: false, message: 'Acceso solo para administradores' };
       }
 
+      console.log('✅ Login exitoso');
+
       // Actualizar último acceso
       await supabase
         .from('usuarios')
@@ -258,7 +288,7 @@ class AuthManager {
         }
       };
     } catch (error) {
-      console.error('Error al hacer login:', error);
+      console.error('❌ Error al hacer login:', error);
       return { success: false, message: 'Error al iniciar sesión' };
     }
   }
@@ -364,15 +394,9 @@ class AuthManager {
     }
   }
 
-  // Simular hash de contraseña (en producción usar bcrypt en backend)
-  async hashPassword(password) {
-    // Este es un ejemplo simple - EN PRODUCCIÓN DEBES USAR BCRYPT EN EL BACKEND
-    return btoa(password); // NO usar en producción real
-  }
-
-  async verifyPassword(password, hash) {
-    // Este es un ejemplo simple - EN PRODUCCIÓN DEBES USAR BCRYPT
-    return btoa(password) === hash; // NO usar en producción real
+  // Hash simple de contraseña usando base64
+  hashPassword(password) {
+    return btoa(password);
   }
 
   // Mostrar notificación toast
